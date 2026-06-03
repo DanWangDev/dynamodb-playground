@@ -1,0 +1,109 @@
+# DynamoDB Playground
+
+A hands-on, exercise-driven DynamoDB learning project. Each module explains a concept, then lets you practice it with runnable TypeScript exercises — all running against DynamoDB Local (no AWS account needed).
+
+## Quick Start
+
+```bash
+# 1. Install dependencies
+npm install
+
+# 2. Start DynamoDB Local (requires Docker)
+npm run dynamodb:start
+
+# 3. Create tables and seed data
+npm run setup
+npm run seed
+
+# 4. Run your first exercise!
+npm run exercise:crud
+```
+
+## Learning Path
+
+Each module follows a **concept → practice** pattern:
+1. Read the `concept.md` file for the module
+2. Run the `exercise.ts` script to practice
+3. Read the source code to see how each operation is implemented
+4. Modify the exercise files to experiment
+
+| Module | Command | What You'll Learn |
+|--------|---------|-------------------|
+| **01 CRUD** | `npm run exercise:crud` | PutItem, GetItem, UpdateItem, DeleteItem, data types, condition expressions, return values, consumed capacity |
+| **02 Queries** | `npm run exercise:queries` | Query vs Scan, KeyConditionExpression, FilterExpression, pagination, composite keys |
+| **03 Indexes** | `npm run exercise:indexes` | LSI, GSI, sparse indexes, projection types, index design decisions, GSI vs Scan cost comparison |
+| **04 Single-Table** | `npm run exercise:single-table` | Key overloading, entity discrimination, adjacency lists, GSI overloading, access-pattern-first design |
+| **05 Advanced** | `npm run exercise:advanced` | Transactions, batch operations, TTL, optimistic locking, conditional writes, atomic counters |
+
+## Project Structure
+
+```
+src/
+├── config/          # Zod-validated env, DynamoDB client factory
+├── shared/          # Types, errors, logger, validators
+├── 01-crud/         # Basic CRUD on Books table
+├── 02-queries/      # Queries & Scans on Orders table
+├── 03-indexes/      # LSI/GSI on Orders table
+├── 04-single-table/ # E-commerce in one table
+└── 05-advanced/     # Transactions, TTL, streams, counters
+
+test/                # Vitest tests (mirrors src/ structure)
+scripts/             # Table setup, teardown, seed data
+```
+
+## Prerequisites
+
+- **Docker** — for running DynamoDB Local
+- **Node.js 18+** — runtime
+- **TypeScript** (via tsx) — exercises are run directly with `npx tsx`
+
+## Available Commands
+
+| Command | Description |
+|---------|-------------|
+| `npm run dynamodb:start` | Start DynamoDB Local |
+| `npm run dynamodb:stop` | Stop DynamoDB Local |
+| `npm run dynamodb:reset` | Reset (delete data, restart) |
+| `npm run setup` | Create all playground tables |
+| `npm run seed` | Populate tables with sample data |
+| `npm run teardown` | Delete all playground tables |
+| `npm run exercise:crud` | Run Module 01 exercise |
+| `npm run exercise:queries` | Run Module 02 exercise |
+| `npm run exercise:indexes` | Run Module 03 exercise |
+| `npm run exercise:single-table` | Run Module 04 exercise |
+| `npm run exercise:advanced` | Run Module 05 exercise |
+| `npm test` | Run all tests |
+| `npm run test:watch` | Run tests in watch mode |
+| `npm run test:coverage` | Run tests with coverage report |
+| `npm run typecheck` | TypeScript type checking |
+
+## Design Decisions
+
+- **Client factory, not singleton** — every module creates its own DynamoDB client, making tests isolatable
+- **Zod validation** — all user inputs validated at module boundaries
+- **Immutability** — functions return new objects, never mutate
+- **Zero frameworks** — only the AWS SDK v3, Zod, and dotenv. No Express, no ORM, no CLI framework
+- **Code IS documentation** — exercise scripts walk through each concept step-by-step
+
+## Testing
+
+Tests use Vitest with DynamoDB Local. Each test file creates its own uniquely-named tables for isolation, enabling parallel execution.
+
+```bash
+# Run all tests
+npm test
+
+# Run a specific module's tests
+npx vitest run test/01-crud/
+
+# Run with coverage (target: 80%+)
+npm run test:coverage
+```
+
+## DynamoDB Local Notes
+
+- Port: **8000** (configurable via `DDB_PORT` in `.env`)
+- Data persists between restarts (Docker volume)
+- Streams have limited TTL in local mode (~minutes vs 24 hours in production)
+- TTL deletions are best-effort (may take time to process)
+- Lambda triggers don't work with DDB Local (Streams can be read via the API)
