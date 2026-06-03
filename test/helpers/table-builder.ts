@@ -1,8 +1,7 @@
 import {
-  DynamoDBClient,
+  type DynamoDBClient,
   CreateTableCommand,
   DeleteTableCommand,
-  DescribeTableCommand,
   type KeySchemaElement,
   type AttributeDefinition,
   type GlobalSecondaryIndex,
@@ -119,8 +118,8 @@ export function tableBuilder(client: DynamoDBClient, tableName: string) {
         }),
       );
 
-      // Wait for the table to be active
-      await waitForTableActive(client, tableName);
+      // DDB Local creates tables near-instantly — brief wait suffices
+      await new Promise((resolve) => setTimeout(resolve, 500));
     },
 
     async delete(): Promise<void> {
@@ -133,21 +132,4 @@ export function tableBuilder(client: DynamoDBClient, tableName: string) {
       }
     },
   };
-}
-
-async function waitForTableActive(
-  client: DynamoDBClient,
-  tableName: string,
-  maxAttempts = 20,
-): Promise<void> {
-  for (let i = 0; i < maxAttempts; i++) {
-    const result = await client.send(
-      new DescribeTableCommand({ TableName: tableName }),
-    );
-    if (result.Table?.TableStatus === "ACTIVE") {
-      return;
-    }
-    await new Promise((resolve) => setTimeout(resolve, 200));
-  }
-  throw new Error(`Table ${tableName} did not become active within timeout`);
 }

@@ -4,9 +4,9 @@
   "private": true,
   "description": "Hands-on DynamoDB learning playground — concept explanations followed by practical exercises",
   "scripts": {
-    "dynamodb:start": "docker-compose up -d",
-    "dynamodb:stop": "docker-compose down",
-    "dynamodb:reset": "docker-compose down -v && docker-compose up -d",
+    "db:start": "npx tsx scripts/start-db.ts",
+    "db:docker": "docker-compose up -d",
+    "db:stop": "docker-compose down",
     "setup": "npx tsx scripts/setup-tables.ts",
     "seed": "npx tsx scripts/seed-data.ts",
     "teardown": "npx tsx scripts/teardown-tables.ts",
@@ -30,6 +30,7 @@
   "devDependencies": {
     "@types/node": "^20.14.0",
     "@vitest/coverage-v8": "^1.6.0",
+    "dynalite": "^4.0.0",
     "tsx": "^4.16.0",
     "typescript": "^5.5.0",
     "vitest": "^1.6.0"

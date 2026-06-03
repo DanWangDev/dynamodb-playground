@@ -1,6 +1,6 @@
 # DynamoDB Playground
 
-A hands-on, exercise-driven DynamoDB learning project. Each module explains a concept, then lets you practice it with runnable TypeScript exercises — all running against DynamoDB Local (no AWS account needed).
+A hands-on, exercise-driven DynamoDB learning project. Each module explains a concept, then lets you practice it with runnable TypeScript exercises.
 
 ## Quick Start
 
@@ -8,8 +8,8 @@ A hands-on, exercise-driven DynamoDB learning project. Each module explains a co
 # 1. Install dependencies
 npm install
 
-# 2. Start DynamoDB Local (requires Docker)
-npm run dynamodb:start
+# 2. Start the local DynamoDB emulator
+npm run db:start
 
 # 3. Create tables and seed data
 npm run setup
@@ -48,22 +48,20 @@ src/
 └── 05-advanced/     # Transactions, TTL, streams, counters
 
 test/                # Vitest tests (mirrors src/ structure)
-scripts/             # Table setup, teardown, seed data
+scripts/             # Table setup, teardown, seed data, DB launcher
 ```
 
 ## Prerequisites
 
-- **Docker** — for running DynamoDB Local
 - **Node.js 18+** — runtime
-- **TypeScript** (via tsx) — exercises are run directly with `npx tsx`
+- No Docker or AWS account required for basic exercises
 
 ## Available Commands
 
 | Command | Description |
 |---------|-------------|
-| `npm run dynamodb:start` | Start DynamoDB Local |
-| `npm run dynamodb:stop` | Stop DynamoDB Local |
-| `npm run dynamodb:reset` | Reset (delete data, restart) |
+| `npm run db:start` | Start local DynamoDB emulator (dynalite) |
+| `npm run db:docker` | Alternative: start DDB Local via Docker |
 | `npm run setup` | Create all playground tables |
 | `npm run seed` | Populate tables with sample data |
 | `npm run teardown` | Delete all playground tables |
@@ -77,6 +75,18 @@ scripts/             # Table setup, teardown, seed data
 | `npm run test:coverage` | Run tests with coverage report |
 | `npm run typecheck` | TypeScript type checking |
 
+## Local Emulator
+
+The default emulator is **dynalite**, a pure-Node.js DynamoDB-compatible server that starts instantly and avoids JVM/Docker issues on Windows.
+
+**Supported locally:** CRUD, Query, Scan, GSIs, LSIs, Batch operations, Conditional writes, Atomic counters
+**Requires real AWS or DDB Local:** Transactions, Streams, TTL auto-expiry
+
+To use the full-featured Java-based DynamoDB Local instead:
+```bash
+npm run db:docker    # Requires Docker
+```
+
 ## Design Decisions
 
 - **Client factory, not singleton** — every module creates its own DynamoDB client, making tests isolatable
@@ -87,7 +97,7 @@ scripts/             # Table setup, teardown, seed data
 
 ## Testing
 
-Tests use Vitest with DynamoDB Local. Each test file creates its own uniquely-named tables for isolation, enabling parallel execution.
+Tests use Vitest with the local emulator. Each test file creates its own uniquely-named tables for isolation.
 
 ```bash
 # Run all tests
@@ -99,11 +109,3 @@ npx vitest run test/01-crud/
 # Run with coverage (target: 80%+)
 npm run test:coverage
 ```
-
-## DynamoDB Local Notes
-
-- Port: **8000** (configurable via `DDB_PORT` in `.env`)
-- Data persists between restarts (Docker volume)
-- Streams have limited TTL in local mode (~minutes vs 24 hours in production)
-- TTL deletions are best-effort (may take time to process)
-- Lambda triggers don't work with DDB Local (Streams can be read via the API)

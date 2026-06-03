@@ -4,3 +4,4 @@ dist/
 *.log
 coverage/
 dynamodb_data/
+.dynalite-data/

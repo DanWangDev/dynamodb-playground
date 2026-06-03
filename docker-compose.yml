@@ -1,23 +1,22 @@
-version: "3.8"
-
-services:
-  dynamodb-local:
-    image: amazon/dynamodb-local:latest
-    container_name: dynamodb-playground
-    ports:
-      - "${DDB_PORT:-8000}:8000"
-    command: >
-      -jar DynamoDBLocal.jar
-      -sharedDb
-      -dbPath /home/dynamodblocal/data
-    volumes:
-      - dynamodb_data:/home/dynamodblocal/data
-    working_dir: /home/dynamodblocal
-    environment:
-      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID:-local}
-      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY:-local}
-      - AWS_REGION=${AWS_REGION:-us-east-1}
-
-volumes:
-  dynamodb_data:
-    driver: local
+# Alternative: Java-based DynamoDB Local (full-featured but may hang on Windows)
+# Use this if the Node.js dynalite emulator lacks features you need.
+# Start with: docker-compose up -d
+#
+# services:
+#   dynamodb-local:
+#     image: amazon/dynamodb-local:2.5.4
+#     container_name: dynamodb-playground
+#     ports:
+#       - "8000:8000"
+#     command: >
+#       -Djava.security.egd=file:/dev/./urandom
+#       -jar DynamoDBLocal.jar
+#       -sharedDb
+#       -dbPath /home/dynamodblocal/data
+#     volumes:
+#       - dynamodb_data:/home/dynamodblocal/data
+#     working_dir: /home/dynamodblocal
+#
+# volumes:
+#   dynamodb_data:
+#     driver: local

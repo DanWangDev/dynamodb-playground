@@ -3,7 +3,6 @@ import type { DynamoDBClients } from "../../src/config/dynamodb";
 
 /**
  * Creates a DynamoDB client configured for the test environment.
- * Uses the same config as the app but allows overrides for test isolation.
  */
 export function createTestClient(): DynamoDBClients {
   const endpoint = process.env["DDB_ENDPOINT"] ?? "http://localhost:8000";
@@ -19,8 +18,6 @@ export function createTestClient(): DynamoDBClients {
 
 /**
  * Generates a unique table name for test isolation.
- * Uses the test file name and a random suffix to avoid collisions
- * when tests run in parallel.
  */
 export function uniqueTableName(base: string): string {
   const suffix = Math.random().toString(36).slice(2, 8);

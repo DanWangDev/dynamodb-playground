@@ -1,0 +1,14 @@
+declare module "dynalite" {
+  import type { Server } from "node:http";
+
+  interface DynaliteOptions {
+    path?: string;
+    createTableMs?: number;
+    deleteTableMs?: number;
+    updateTableMs?: number;
+    maxItemSizeKb?: number;
+  }
+
+  function dynalite(options?: DynaliteOptions): Server;
+  export default dynalite;
+}
