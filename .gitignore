@@ -5,3 +5,4 @@ dist/
 coverage/
 dynamodb_data/
 .dynalite-data/
+dynalite-data/

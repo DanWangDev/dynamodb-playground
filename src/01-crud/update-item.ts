@@ -96,8 +96,9 @@ export async function updateBook(
 }
 
 /**
- * UpdateItem — Add a tag to a book using the ADD expression.
- * Demonstrates using ADD for set operations.
+ * UpdateItem — Add a tag to a book using list_append.
+ * Demonstrates using list_append for DynamoDB List attributes.
+ * (ADD with Set works for DynamoDB String Set (SS) attributes, but we store tags as List (L).)
  */
 export async function addBookTag(
   doc: DynamoDBDocumentClient,
@@ -109,9 +110,9 @@ export async function addBookTag(
     new UpdateCommand({
       TableName: tableName,
       Key: { isbn },
-      UpdateExpression: "ADD #tags :tag",
+      UpdateExpression: "SET #tags = list_append(#tags, :tag)",
       ExpressionAttributeNames: { "#tags": "tags" },
-      ExpressionAttributeValues: { ":tag": new Set([tag]) },
+      ExpressionAttributeValues: { ":tag": [tag] },
       ConditionExpression: "attribute_exists(isbn)",
       ReturnValues: "ALL_NEW",
     }),
