@@ -9,7 +9,7 @@ export async function setup(): Promise<void> {
 
   const client = new DynamoDBClient({
     endpoint,
-    region: process.env["AWS_REGION"] ?? "us-east-1",
+    region: process.env["AWS_REGION"] ?? "eu-west-2",
     credentials: {
       accessKeyId: process.env["AWS_ACCESS_KEY_ID"] ?? "local",
       secretAccessKey: process.env["AWS_SECRET_ACCESS_KEY"] ?? "local",

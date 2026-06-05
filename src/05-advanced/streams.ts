@@ -24,14 +24,25 @@ import { env } from "../config/env";
  */
 
 function createStreamsClient(): DynamoDBStreamsClient {
-  return new DynamoDBStreamsClient({
-    endpoint: env.DDB_ENDPOINT,
+  const config: Record<string, unknown> = {
     region: env.AWS_REGION,
-    credentials: {
+  };
+
+  // Only set endpoint when targeting a local emulator — omit for real AWS cloud
+  if (env.DDB_ENDPOINT) {
+    config["endpoint"] = env.DDB_ENDPOINT;
+  }
+
+  // Only set explicit credentials when both values are provided — omit for
+  // the default AWS credential chain (env vars, ~/.aws/credentials, IAM roles)
+  if (env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY) {
+    config["credentials"] = {
       accessKeyId: env.AWS_ACCESS_KEY_ID,
       secretAccessKey: env.AWS_SECRET_ACCESS_KEY,
-    },
-  });
+    };
+  }
+
+  return new DynamoDBStreamsClient(config as any);
 }
 
 /**
