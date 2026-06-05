@@ -4,11 +4,15 @@ import { config } from "dotenv";
 config();
 
 const envSchema = z.object({
-  DDB_ENDPOINT: z.string().url().default("http://localhost:8000"),
+  // Omit DDB_ENDPOINT to use real AWS DynamoDB (cloud).
+  // Set to http://localhost:8000 for the local dynalite emulator.
+  DDB_ENDPOINT: z.string().url().optional(),
   DDB_PORT: z.string().default("8000"),
   AWS_REGION: z.string().default("us-east-1"),
-  AWS_ACCESS_KEY_ID: z.string().default("local"),
-  AWS_SECRET_ACCESS_KEY: z.string().default("local"),
+  // Omit both AWS_* keys to use the default AWS credential chain
+  // (env vars, ~/.aws/credentials, IAM roles).
+  AWS_ACCESS_KEY_ID: z.string().optional(),
+  AWS_SECRET_ACCESS_KEY: z.string().optional(),
   DDB_TABLE_PREFIX: z.string().default("playground_"),
 });
 
