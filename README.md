@@ -56,12 +56,22 @@ scripts/             # Table setup, teardown, seed data, DB launcher
 - **Node.js 18+** — runtime
 - No Docker or AWS account required for basic exercises
 
+## Data Management
+
+```bash
+npm run reset       # Purge all data, recreate tables, re-seed (teardown + setup + seed)
+npm run teardown    # Delete all playground tables
+npm run setup       # Create tables (safe to re-run — skips existing)
+npm run seed        # Populate with fresh sample data
+```
+
 ## Available Commands
 
 | Command | Description |
 |---------|-------------|
 | `npm run db:start` | Start local DynamoDB emulator (dynalite) |
 | `npm run db:docker` | Alternative: start DDB Local via Docker |
+| `npm run reset` | Purge all data, recreate tables, re-seed |
 | `npm run setup` | Create all playground tables |
 | `npm run seed` | Populate tables with sample data |
 | `npm run teardown` | Delete all playground tables |
