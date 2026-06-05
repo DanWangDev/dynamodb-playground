@@ -96,8 +96,8 @@ In another terminal, run `npm run db:scan` to inspect the database between steps
 
 The default emulator is **dynalite**, a pure-Node.js DynamoDB-compatible server that starts instantly and avoids JVM/Docker issues on Windows.
 
-**Supported locally:** CRUD, Query, Scan, GSIs, LSIs, Batch operations, Conditional writes, Atomic counters
-**Requires real AWS or DDB Local:** Transactions, Streams, TTL auto-expiry
+**Fully supported locally:** CRUD, Query, Scan, GSIs, LSIs, Batch ops, Conditional writes, Atomic counters
+**Requires real AWS:** Transactions, Streams, TTL auto-expiry
 
 To use the full-featured Java-based DynamoDB Local instead:
 ```bash

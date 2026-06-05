@@ -5,10 +5,11 @@
  * SigV4/JVM issues that Docker-based DynamoDB Local has on some Windows setups.
  *
  * Limitations vs Java DDB Local:
- *   - No GSI/LSI support (Modules 03-04 won't work locally)
- *   - No Streams (Module 05 streams exercise won't work)
- *   - No TTL (items won't auto-expire)
+ *   - No Transactions (Module 05 transactions will fail gracefully)
+ *   - No Streams (Module 05 streams exercise will show no stream)
+ *   - No TTL auto-expiry (items with TTL won't be deleted automatically)
  *
+ * GSIs and LSIs are supported — Modules 03 and 04 work fully.
  * These features work against real AWS DynamoDB (free tier eligible).
  */
 
@@ -28,8 +29,9 @@ server.listen(PORT, () => {
   console.log(`DynamoDB emulator (dynalite) running on http://localhost:${PORT}`);
   console.log(`Data directory: ${DATA_DIR}`);
   console.log("");
-  console.log("Limitations: no GSI/LSI, no Streams, no TTL");
-  console.log("For full features, use real AWS DynamoDB or Docker-based DDB Local.");
+  console.log("Limitations: no Transactions, no Streams, no TTL auto-expiry");
+  console.log("GSIs and LSIs work. Modules 01-04 run fully, 05 partially.");
+  console.log("For everything: use real AWS DynamoDB (free tier eligible).");
   console.log("");
   console.log("Press Ctrl+C to stop.");
 });
