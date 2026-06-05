@@ -4,11 +4,32 @@ A hands-on, exercise-driven DynamoDB learning project. Each module explains a co
 
 ## Quick Start
 
+**Option A — Real AWS DynamoDB (recommended for full features):**
+
 ```bash
 # 1. Install dependencies
 npm install
 
-# 2. Start the local DynamoDB emulator
+# 2. Configure your .env (no DDB_ENDPOINT = cloud)
+#    Credentials are picked up from ~/.aws/credentials or env vars
+cp .env.example .env
+#    Edit .env: comment out DDB_ENDPOINT, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY
+
+# 3. Create tables and seed data (goes to your AWS account)
+npm run setup
+npm run seed
+
+# 4. Run your first exercise!
+npm run exercise:crud
+```
+
+**Option B — Local emulator (no AWS account needed):**
+
+```bash
+# 1. Install dependencies
+npm install
+
+# 2. Start the local DynamoDB emulator in a separate terminal
 npm run db:start
 
 # 3. Create tables and seed data
@@ -54,7 +75,8 @@ scripts/             # Table setup, teardown, seed data, DB launcher
 ## Prerequisites
 
 - **Node.js 18+** — runtime
-- No Docker or AWS account required for basic exercises
+- **Option A (cloud):** An AWS account with DynamoDB access (free tier covers 25 GB storage + 25 RCU/WCU)
+- **Option B (local):** No Docker or AWS account required — just Node.js
 
 ## Data Management
 
@@ -92,9 +114,34 @@ In another terminal, run `npm run db:scan` to inspect the database between steps
 | `npm run test:coverage` | Run tests with coverage report |
 | `npm run typecheck` | TypeScript type checking |
 
-## Local Emulator
+## Configuration
+
+### AWS Cloud (default)
+
+When `DDB_ENDPOINT` is **not set** in `.env`, the SDK connects to real AWS DynamoDB. Credentials are resolved via the standard AWS chain:
+
+1. `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` environment variables
+2. `~/.aws/credentials` profile (`aws configure`)
+3. IAM role (EC2, ECS, Lambda)
+
+```bash
+# .env — cloud mode (no endpoint = real AWS)
+AWS_REGION=eu-west-2
+DDB_TABLE_PREFIX=playground_
+```
+
+### Local Emulator
 
 The default emulator is **dynalite**, a pure-Node.js DynamoDB-compatible server that starts instantly and avoids JVM/Docker issues on Windows.
+
+```bash
+# .env — local mode
+DDB_ENDPOINT=http://127.0.0.1:8000
+AWS_REGION=eu-west-2
+AWS_ACCESS_KEY_ID=local
+AWS_SECRET_ACCESS_KEY=local
+DDB_TABLE_PREFIX=playground_
+```
 
 **Fully supported locally:** CRUD, Query, Scan, GSIs, LSIs, Batch ops, Conditional writes, Atomic counters
 **Requires real AWS:** Transactions, Streams, TTL auto-expiry
