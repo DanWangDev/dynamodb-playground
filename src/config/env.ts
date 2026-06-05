@@ -8,7 +8,7 @@ const envSchema = z.object({
   // Set to http://localhost:8000 for the local dynalite emulator.
   DDB_ENDPOINT: z.string().url().optional(),
   DDB_PORT: z.string().default("8000"),
-  AWS_REGION: z.string().default("us-east-1"),
+  AWS_REGION: z.string().default("eu-west-2"),
   // Omit both AWS_* keys to use the default AWS credential chain
   // (env vars, ~/.aws/credentials, IAM roles).
   AWS_ACCESS_KEY_ID: z.string().optional(),

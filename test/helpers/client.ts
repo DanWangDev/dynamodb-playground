@@ -8,7 +8,7 @@ export function createTestClient(): DynamoDBClients {
   // Tests always target a local DynamoDB emulator by default.
   // Set DDB_ENDPOINT to override (leave unset for real AWS in integration tests).
   const endpoint = process.env["DDB_ENDPOINT"] ?? "http://localhost:8000";
-  const region = process.env["AWS_REGION"] ?? "us-east-1";
+  const region = process.env["AWS_REGION"] ?? "eu-west-2";
 
   return createDynamoDBClient({
     endpoint,
