@@ -60,10 +60,17 @@ scripts/             # Table setup, teardown, seed data, DB launcher
 
 ```bash
 npm run reset       # Purge all data, recreate tables, re-seed (teardown + setup + seed)
+npm run db:scan     # View all data in all tables (pass table name to filter)
 npm run teardown    # Delete all playground tables
 npm run setup       # Create tables (safe to re-run — skips existing)
 npm run seed        # Populate with fresh sample data
 ```
+
+**Step-by-step mode:** Add `--step` to any exercise to pause between operations:
+```bash
+npx tsx src/01-crud/exercise.ts --step
+```
+In another terminal, run `npm run db:scan` to inspect the database between steps.
 
 ## Available Commands
 

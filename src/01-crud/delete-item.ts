@@ -35,7 +35,7 @@ export async function deleteBook(
   } = options;
 
   // Combine attribute_exists with any custom conditions
-  const allConditions = ["attribute_exists(isbn)"];
+  const allConditions = ["attribute_exists(#isbn)"];
   if (conditionExpression) {
     allConditions.push(conditionExpression);
   }

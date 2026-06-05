@@ -1,20 +1,22 @@
 /**
  * Module 01 Exercise: Core CRUD Operations
  *
- * Run: npm run exercise:crud  (or: npx tsx src/01-crud/exercise.ts)
+ * Run: npm run exercise:crud          (run all steps automatically)
+ *      npx tsx src/01-crud/exercise.ts --step  (step through interactively)
  *
- * This script walks you through each CRUD concept step by step.
- * Each step explains the concept, executes the operation,
- * and shows you the result. Read the output and the source code together.
+ * In step mode, the script pauses between each operation so you can
+ * run `npm run db:scan` in another terminal to inspect the database.
  *
  * Prerequisites:
- *   1. docker-compose up -d   (start DynamoDB Local)
- *   2. npm run setup          (create tables)
+ *   1. npm run db:start      (start local DynamoDB - separate terminal)
+ *   2. npm run setup         (create tables)
+ *   3. npm run seed          (optional — populates sample data)
  */
 
 import { createClientFromEnv } from "../config/dynamodb";
 import { env } from "../config/env";
 import { createLogger } from "../shared/logger";
+import { enableStepMode, stepPause } from "../shared/prompt";
 import { createBook, putBook } from "./create-item";
 import { getBook } from "./read-item";
 import { updateBook, addBookTag, removeBookAttribute } from "./update-item";
@@ -24,6 +26,7 @@ const log = createLogger("01-crud");
 const TABLE = `${env.DDB_TABLE_PREFIX}books`;
 
 async function run(): Promise<void> {
+  if (process.argv.includes("--step")) enableStepMode();
   const { doc } = createClientFromEnv(env);
 
   log.section("Module 01: Core CRUD Operations");
@@ -70,6 +73,7 @@ async function run(): Promise<void> {
   }
 
   // ─── Step 2: Read (GetItem) ────────────────────────────────────
+  await stepPause();
   log.section("Step 2: GetItem — Reading an Item");
 
   log.concept(
@@ -99,6 +103,7 @@ async function run(): Promise<void> {
   }
 
   // ─── Step 3: Update (UpdateItem) ───────────────────────────────
+  await stepPause();
   log.section("Step 3: UpdateItem — Modifying an Item");
 
   log.concept(
@@ -136,6 +141,7 @@ async function run(): Promise<void> {
   log.success("Attribute removed — 'published' is gone!");
 
   // ─── Step 4: PutItem (full replacement) ────────────────────────
+  await stepPause();
   log.section("Step 4: PutItem — Full Replacement (UPSERT)");
 
   log.concept(
@@ -164,6 +170,7 @@ async function run(): Promise<void> {
   log.warn("Notice: tags, rating, pageCount are GONE!", afterOverwrite);
 
   // ─── Step 5: Delete (DeleteItem) ───────────────────────────────
+  await stepPause();
   log.section("Step 5: DeleteItem — Removing an Item");
 
   log.concept(

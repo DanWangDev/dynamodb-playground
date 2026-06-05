@@ -11,6 +11,7 @@
     "seed": "npx tsx scripts/seed-data.ts",
     "teardown": "npx tsx scripts/teardown-tables.ts",
     "reset": "npx tsx scripts/teardown-tables.ts && npx tsx scripts/setup-tables.ts && npx tsx scripts/seed-data.ts",
+    "db:scan": "npx tsx scripts/scan-data.ts",
     "exercise:crud": "npx tsx src/01-crud/exercise.ts",
     "exercise:queries": "npx tsx src/02-queries/exercise.ts",
     "exercise:indexes": "npx tsx src/03-indexes/exercise.ts",
