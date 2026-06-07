@@ -57,7 +57,7 @@ export async function createOrderAndDeductInventory(
           ...order.items.map((item) => ({
             Update: {
               TableName: inventoryTable,
-              Key: { productId: item.productId },
+              Key: { isbn: item.productId },
               UpdateExpression:
                 "SET #stock = #stock - :qty, #updated = :now",
               ConditionExpression: "#stock >= :qty",
@@ -114,7 +114,7 @@ export async function getOrderWithInventory(
         ...productIds.map((productId) => ({
           Get: {
             TableName: inventoryTable,
-            Key: { productId },
+            Key: { isbn: productId },
           },
         })),
       ],
@@ -149,7 +149,7 @@ export async function transferInventory(
           {
             Update: {
               TableName: tableName,
-              Key: { productId: fromProductId },
+              Key: { isbn: fromProductId },
               UpdateExpression:
                 "SET #stock = #stock - :qty, #updated = :now",
               ConditionExpression: "#stock >= :qty",
@@ -167,13 +167,14 @@ export async function transferInventory(
           {
             Update: {
               TableName: tableName,
-              Key: { productId: toProductId },
+              Key: { isbn: toProductId },
               UpdateExpression:
                 "SET #stock = #stock + :qty, #updated = :now",
-              ConditionExpression: "attribute_exists(productId)",
+              ConditionExpression: "attribute_exists(#isbn)",
               ExpressionAttributeNames: {
                 "#stock": "stock",
                 "#updated": "updatedAt",
+                "#isbn": "isbn",
               },
               ExpressionAttributeValues: {
                 ":qty": quantity,

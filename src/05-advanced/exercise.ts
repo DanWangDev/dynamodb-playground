@@ -86,7 +86,7 @@ async function run(): Promise<void> {
 
   log.step("Batch-writing 30 products (will be chunked into 25 + 5)...");
   const products = Array.from({ length: 30 }, (_, i) => ({
-    productId: `bulk_prod_${i}`,
+    isbn: `bulk_prod_${i}`,
     name: `Bulk Product ${i}`,
     price: (i + 1) * 1.99,
     stock: 100,
