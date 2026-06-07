@@ -54,6 +54,24 @@ async function main(): Promise<void> {
     b.withPK("sessionId", "S"),
   );
 
+  // Module 05: Inventory table (for transactions demo)
+  console.log(`  Creating ${PREFIX}inventory...`);
+  await createIfNotExists(raw, `${PREFIX}inventory`, (b) =>
+    b.withPK("productId", "S"),
+  );
+
+  // Module 05: Profiles table (for conditional writes / optimistic locking demo)
+  console.log(`  Creating ${PREFIX}profiles...`);
+  await createIfNotExists(raw, `${PREFIX}profiles`, (b) =>
+    b.withPK("userId", "S"),
+  );
+
+  // Module 05: Stats table (for atomic counters demo)
+  console.log(`  Creating ${PREFIX}stats...`);
+  await createIfNotExists(raw, `${PREFIX}stats`, (b) =>
+    b.withPK("articleId", "S"),
+  );
+
   console.log("\nAll tables created successfully.");
   raw.destroy();
 }

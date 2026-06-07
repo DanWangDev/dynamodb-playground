@@ -28,10 +28,6 @@ import type { ArticleStats } from "./types";
  *
  * Uses ADD expression — no race condition possible.
  */
-function articleKey(articleId: string) {
-  return { pk: `ARTICLE#${articleId}`, sk: "STATS" };
-}
-
 export async function incrementViews(
   doc: DynamoDBDocumentClient,
   tableName: string,
@@ -41,7 +37,7 @@ export async function incrementViews(
   const result = await doc.send(
     new UpdateCommand({
       TableName: tableName,
-      Key: articleKey(articleId),
+      Key: { articleId },
       UpdateExpression: "ADD #views :count",
       ExpressionAttributeNames: { "#views": "views" },
       ExpressionAttributeValues: { ":count": count },
@@ -63,7 +59,7 @@ export async function likeArticle(
   const result = await doc.send(
     new UpdateCommand({
       TableName: tableName,
-      Key: articleKey(articleId),
+      Key: { articleId },
       UpdateExpression: "ADD #likes :one",
       ExpressionAttributeNames: { "#likes": "likes" },
       ExpressionAttributeValues: { ":one": 1 },
@@ -87,7 +83,7 @@ export async function decrementCounter(
   const result = await doc.send(
     new UpdateCommand({
       TableName: tableName,
-      Key: articleKey(articleId),
+      Key: { articleId },
       UpdateExpression: "ADD #attr :amount",
       ConditionExpression: "#attr >= :amount", // prevent going negative
       ExpressionAttributeNames: { "#attr": attrName },
@@ -110,7 +106,7 @@ export async function getArticleStats(
   const result = await doc.send(
     new GetCommand({
       TableName: tableName,
-      Key: articleKey(articleId),
+      Key: { articleId },
     }),
   );
 
@@ -129,7 +125,7 @@ export async function resetCounter(
   await doc.send(
     new UpdateCommand({
       TableName: tableName,
-      Key: articleKey(articleId),
+      Key: { articleId },
       UpdateExpression: "SET #attr = :zero",
       ExpressionAttributeNames: { "#attr": attrName },
       ExpressionAttributeValues: { ":zero": 0 },
