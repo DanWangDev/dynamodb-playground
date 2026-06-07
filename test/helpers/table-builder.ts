@@ -2,6 +2,7 @@ import {
   type DynamoDBClient,
   CreateTableCommand,
   DeleteTableCommand,
+  waitUntilTableExists,
   type KeySchemaElement,
   type AttributeDefinition,
   type GlobalSecondaryIndex,
@@ -118,8 +119,11 @@ export function tableBuilder(client: DynamoDBClient, tableName: string) {
         }),
       );
 
-      // DDB Local creates tables near-instantly — brief wait suffices
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      // Wait for table to become active (near-instant for local, ~5-10s for AWS cloud)
+      await waitUntilTableExists(
+        { client, maxWaitTime: 30, minDelay: 1, maxDelay: 3 },
+        { TableName: tableName },
+      );
     },
 
     async delete(): Promise<void> {
