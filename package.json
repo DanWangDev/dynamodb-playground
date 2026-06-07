@@ -18,6 +18,7 @@
     "exercise:single-table": "npx tsx src/04-single-table/exercise.ts",
     "exercise:advanced": "npx tsx src/05-advanced/exercise.ts",
     "exercise:streams": "npx tsx src/06-streams/exercise.ts",
+    "exercise:capacity": "npx tsx src/07-capacity/exercise.ts",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
