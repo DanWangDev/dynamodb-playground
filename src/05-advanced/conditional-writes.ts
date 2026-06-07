@@ -25,7 +25,9 @@ export async function createUserProfile(
   name: string,
   email: string,
 ): Promise<UserProfile> {
-  const profile: UserProfile = {
+  const profile: UserProfile & { pk: string; sk: string } = {
+    pk: `USER#${userId}`,
+    sk: "PROFILE",
     userId,
     name,
     email,
@@ -38,7 +40,7 @@ export async function createUserProfile(
       new PutCommand({
         TableName: tableName,
         Item: profile,
-        ConditionExpression: "attribute_not_exists(userId)",
+        ConditionExpression: "attribute_not_exists(pk)",
       }),
     );
     return profile;
@@ -80,7 +82,7 @@ export async function updateUserProfileOptimistic(
     const result = await doc.send(
       new UpdateCommand({
         TableName: tableName,
-        Key: { userId },
+        Key: { pk: `USER#${userId}`, sk: "PROFILE" },
         UpdateExpression:
           "SET #name = :name, #email = :email, #version = :newVersion, #updatedAt = :now",
         ConditionExpression: "#version = :expectedVersion",
@@ -130,7 +132,7 @@ export async function deleteIfNotActive(
     await doc.send(
       new UpdateCommand({
         TableName: tableName,
-        Key: { userId },
+        Key: { pk: `USER#${userId}`, sk: "PROFILE" },
         UpdateExpression: "SET #status = :deleted, #updatedAt = :now",
         ConditionExpression: "#status <> :active",
         ExpressionAttributeNames: {
@@ -173,10 +175,11 @@ export async function updateWithRetry(
 ): Promise<UserProfile> {
   // First, read the current version
   const { GetCommand } = await import("@aws-sdk/lib-dynamodb");
+  const key = { pk: `USER#${userId}`, sk: "PROFILE" };
   let current = await doc.send(
     new GetCommand({
       TableName: tableName,
-      Key: { userId },
+      Key: key,
       ConsistentRead: true, // important: read the latest version
     }),
   );
@@ -209,7 +212,7 @@ export async function updateWithRetry(
         current = await doc.send(
           new GetCommand({
             TableName: tableName,
-            Key: { userId },
+            Key: key,
             ConsistentRead: true,
           }),
         );
