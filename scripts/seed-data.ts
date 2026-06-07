@@ -68,16 +68,16 @@ async function seedEcommerce(
 ): Promise<void> {
   const table = `${PREFIX}ecommerce`;
   const items = [
-    // Users
-    { pk: "USER#alice", sk: "PROFILE", gsi1Pk: "PROFILE", gsi1Sk: "alice@example.com", name: "Alice", email: "alice@example.com", entityType: "USER" },
-    { pk: "USER#bob", sk: "PROFILE", gsi1Pk: "PROFILE", gsi1Sk: "bob@example.com", name: "Bob", email: "bob@example.com", entityType: "USER" },
+    // Users (different IDs from the exercise to avoid conflicts)
+    { pk: "USER#charlie", sk: "PROFILE", gsi1Pk: "PROFILE", gsi1Sk: "charlie@example.com", name: "Charlie", email: "charlie@example.com", entityType: "USER" },
+    { pk: "USER#diana", sk: "PROFILE", gsi1Pk: "PROFILE", gsi1Sk: "diana@example.com", name: "Diana", email: "diana@example.com", entityType: "USER" },
     // Products
-    { pk: "PRODUCT#p1", sk: "DETAILS", gsi1Pk: "PRODUCT", gsi1Sk: "Widget", name: "Widget", price: 9.99, stock: 100, entityType: "PRODUCT" },
-    { pk: "PRODUCT#p2", sk: "DETAILS", gsi1Pk: "PRODUCT", gsi1Sk: "Gadget", name: "Gadget", price: 24.99, stock: 50, entityType: "PRODUCT" },
+    { pk: "PRODUCT#p3", sk: "DETAILS", gsi1Pk: "PRODUCT", gsi1Sk: "Thingamajig", name: "Thingamajig", price: 14.99, stock: 200, entityType: "PRODUCT" },
+    { pk: "PRODUCT#p4", sk: "DETAILS", gsi1Pk: "PRODUCT", gsi1Sk: "Doohickey", name: "Doohickey", price: 39.99, stock: 75, entityType: "PRODUCT" },
     // Orders
-    { pk: "USER#alice", sk: "ORDER#ord1", gsi1Pk: "ORDER", gsi1Sk: "2024-01-15T10:30:00Z", orderDate: "2024-01-15T10:30:00Z", total: 34.98, status: "DELIVERED", entityType: "ORDER" },
-    { pk: "USER#alice", sk: "ORDER#ord2", gsi1Pk: "ORDER", gsi1Sk: "2024-02-20T14:00:00Z", orderDate: "2024-02-20T14:00:00Z", total: 24.99, status: "PENDING", entityType: "ORDER" },
-    { pk: "USER#bob", sk: "ORDER#ord3", gsi1Pk: "ORDER", gsi1Sk: "2024-03-10T09:15:00Z", orderDate: "2024-03-10T09:15:00Z", total: 9.99, status: "SHIPPED", entityType: "ORDER" },
+    { pk: "USER#charlie", sk: "ORDER#ord1", gsi1Pk: "ORDER", gsi1Sk: "2024-01-15T10:30:00Z", orderDate: "2024-01-15T10:30:00Z", total: 34.98, status: "DELIVERED", entityType: "ORDER" },
+    { pk: "USER#charlie", sk: "ORDER#ord2", gsi1Pk: "ORDER", gsi1Sk: "2024-02-20T14:00:00Z", orderDate: "2024-02-20T14:00:00Z", total: 24.99, status: "PENDING", entityType: "ORDER" },
+    { pk: "USER#diana", sk: "ORDER#ord3", gsi1Pk: "ORDER", gsi1Sk: "2024-03-10T09:15:00Z", orderDate: "2024-03-10T09:15:00Z", total: 9.99, status: "SHIPPED", entityType: "ORDER" },
   ];
 
   await batchWrite(doc, table, items);
