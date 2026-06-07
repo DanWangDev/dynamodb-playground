@@ -83,24 +83,9 @@ Read up to **100 items** (or 16MB) across tables. Items are returned by table.
 
 ## 3. DynamoDB Streams
 
-Streams capture a time-ordered sequence of item-level changes (create, update, delete).
+Streams have been expanded into their own module with a full walkthrough and Lambda integration pattern. See **Module 06: Streams & Lambda** (`npm run exercise:streams`).
 
-**Stream View Types**:
-| Type | What you see |
-|---|---|
-| KEYS_ONLY | Only the modified item's keys |
-| NEW_IMAGE | The item AFTER modification |
-| OLD_IMAGE | The item BEFORE modification |
-| NEW_AND_OLD_IMAGES | Both before and after |
-
-**Shards & Iterators**: Streams are partitioned into shards. You iterate through shards using:
-- `TRIM_HORIZON` — start from the beginning
-- `LATEST` — start from the most recent record
-- `AFTER_SEQUENCE_NUMBER` — resume from a specific point
-
-**Production use**: Connect Streams to Lambda for event-driven architectures (e.g., "when an order is placed, send a confirmation email").
-
-> **DynamoDB Local caveat**: Streams work in DDB Local but records expire quickly and Lambda integration is not available. This module demonstrates the shard iteration pattern.
+The low-level shard-iteration primitives (`getTableStreamArn`, `describeStream`, `getShardIterator`, `getRecords`, `readAllStreamRecords`, `summarizeRecords`) are defined in `src/05-advanced/streams.ts` and re-exported by Module 06.
 
 ---
 
