@@ -77,8 +77,7 @@ export async function createOrderAndDeductInventory(
   } catch (error: unknown) {
     if (
       error instanceof Error &&
-      (error.name === "TransactionCanceledException" ||
-       error.name === "UnknownOperationException")
+      error.name === "TransactionCanceledException"
     ) {
       throw new TransactionCanceledError(
         "Could not complete order: inventory may be insufficient",
@@ -188,8 +187,7 @@ export async function transferInventory(
   } catch (error: unknown) {
     if (
       error instanceof Error &&
-      (error.name === "TransactionCanceledException" ||
-       error.name === "UnknownOperationException")
+      error.name === "TransactionCanceledException"
     ) {
       throw new TransactionCanceledError(
         `Could not transfer ${quantity} units from ${fromProductId} to ${toProductId}`,
