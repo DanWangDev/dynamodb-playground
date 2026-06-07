@@ -72,6 +72,15 @@ async function main(): Promise<void> {
     b.withPK("articleId", "S"),
   );
 
+  // Module 06: Stream demo table (composite key + DynamoDB Streams enabled)
+  console.log(`  Creating ${PREFIX}stream_demo...`);
+  await createWithStream(raw, `${PREFIX}stream_demo`, (b) =>
+    b
+      .withPK("pk", "S")
+      .withSK("sk", "S")
+      .withStream("NEW_AND_OLD_IMAGES"),
+  );
+
   console.log("\nAll tables created successfully.");
   raw.destroy();
 }
@@ -91,6 +100,47 @@ async function createIfNotExists(
       error.name === "ResourceInUseException"
     ) {
       console.log(`    - Table already exists: ${tableName}`);
+      return;
+    }
+    throw error;
+  }
+}
+
+/**
+ * Create a table with streams enabled. If the table already exists
+ * but without streams, enables streams on the existing table.
+ */
+async function createWithStream(
+  client: DynamoDBClient,
+  tableName: string,
+  configure: (b: ReturnType<typeof tableBuilder>) => ReturnType<typeof tableBuilder>,
+): Promise<void> {
+  try {
+    const builder = tableBuilder(client, tableName);
+    await configure(builder).create();
+    console.log(`    ✓ Created table with stream: ${tableName}`);
+  } catch (error: unknown) {
+    if (
+      error instanceof Error &&
+      error.name === "ResourceInUseException"
+    ) {
+      console.log(`    - Table already exists: ${tableName}`);
+      // Try to enable streams on the existing table
+      try {
+        const builder = tableBuilder(client, tableName);
+        await configure(builder).enableStreamOnExisting();
+        console.log(`    ✓ Enabled stream on existing table: ${tableName}`);
+      } catch (streamError: unknown) {
+        // Streams may already be enabled — that's fine
+        if (
+          streamError instanceof Error &&
+          streamError.name === "ResourceInUseException"
+        ) {
+          console.log(`    - Stream already enabled: ${tableName}`);
+        } else {
+          throw streamError;
+        }
+      }
       return;
     }
     throw error;

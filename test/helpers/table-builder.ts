@@ -2,12 +2,14 @@ import {
   type DynamoDBClient,
   CreateTableCommand,
   DeleteTableCommand,
+  UpdateTableCommand,
   waitUntilTableExists,
   type KeySchemaElement,
   type AttributeDefinition,
   type GlobalSecondaryIndex,
   type LocalSecondaryIndex,
   type BillingMode,
+  type StreamViewType,
 } from "@aws-sdk/client-dynamodb";
 
 /**
@@ -27,6 +29,7 @@ export function tableBuilder(client: DynamoDBClient, tableName: string) {
   const gsis: GlobalSecondaryIndex[] = [];
   const lsis: LocalSecondaryIndex[] = [];
   let billingMode: BillingMode = "PAY_PER_REQUEST";
+  let streamViewType: StreamViewType | null = null;
 
   function addAttribute(name: string, type: "S" | "N" | "B"): void {
     if (!attributes.find((a) => a.AttributeName === name)) {
@@ -98,6 +101,11 @@ export function tableBuilder(client: DynamoDBClient, tableName: string) {
       return this;
     },
 
+    withStream(viewType: StreamViewType) {
+      streamViewType = viewType;
+      return this;
+    },
+
     async create(): Promise<void> {
       if (!pk) {
         throw new Error("Partition key (PK) is required. Call withPK() before create().");
@@ -116,6 +124,9 @@ export function tableBuilder(client: DynamoDBClient, tableName: string) {
           BillingMode: billingMode,
           ...(gsis.length > 0 ? { GlobalSecondaryIndexes: gsis } : {}),
           ...(lsis.length > 0 ? { LocalSecondaryIndexes: lsis } : {}),
+          ...(streamViewType
+            ? { StreamSpecification: { StreamEnabled: true, StreamViewType: streamViewType } }
+            : {}),
         }),
       );
 
@@ -134,6 +145,28 @@ export function tableBuilder(client: DynamoDBClient, tableName: string) {
       } catch {
         // Table may already not exist — that's fine for cleanup
       }
+    },
+
+    /**
+     * Enable streams on an already-existing table.
+     * Idempotent — succeeds silently if streams are already enabled.
+     * Used by setup scripts when a table exists but without streams.
+     */
+    async enableStreamOnExisting(): Promise<void> {
+      if (!streamViewType) return;
+      await client.send(
+        new UpdateTableCommand({
+          TableName: tableName,
+          StreamSpecification: {
+            StreamEnabled: true,
+            StreamViewType: streamViewType,
+          },
+        }),
+      );
+      await waitUntilTableExists(
+        { client, maxWaitTime: 30, minDelay: 1, maxDelay: 3 },
+        { TableName: tableName },
+      );
     },
   };
 }

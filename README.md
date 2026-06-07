@@ -55,6 +55,7 @@ Each module follows a **concept → practice** pattern:
 | **03 Indexes** | `npm run exercise:indexes` | LSI, GSI, sparse indexes, projection types, index design decisions, GSI vs Scan cost comparison |
 | **04 Single-Table** | `npm run exercise:single-table` | Key overloading, entity discrimination, adjacency lists, GSI overloading, access-pattern-first design |
 | **05 Advanced** | `npm run exercise:advanced` | Transactions, batch operations, TTL, optimistic locking, conditional writes, atomic counters |
+| **06 Streams** | `npm run exercise:streams` | Stream enablement, shard iteration, INSERT/MODIFY/REMOVE events, Lambda triggers, event source mapping |
 
 ## Project Structure
 
@@ -66,7 +67,8 @@ src/
 ├── 02-queries/      # Queries & Scans on Orders table
 ├── 03-indexes/      # LSI/GSI on Orders table
 ├── 04-single-table/ # E-commerce in one table
-└── 05-advanced/     # Transactions, TTL, streams, counters
+├── 05-advanced/     # Transactions, TTL, streams, counters
+└── 06-streams/      # Streams & Lambda triggers
 
 test/                # Vitest tests (mirrors src/ structure)
 scripts/             # Table setup, teardown, seed data, DB launcher
@@ -109,6 +111,7 @@ In another terminal, run `npm run db:scan` to inspect the database between steps
 | `npm run exercise:indexes` | Run Module 03 exercise |
 | `npm run exercise:single-table` | Run Module 04 exercise |
 | `npm run exercise:advanced` | Run Module 05 exercise |
+| `npm run exercise:streams` | Run Module 06 exercise (requires real AWS) |
 | `npm test` | Run all tests |
 | `npm run test:watch` | Run tests in watch mode |
 | `npm run test:coverage` | Run tests with coverage report |
