@@ -57,6 +57,7 @@ Each module follows a **concept → practice** pattern:
 | **05 Advanced** | `npm run exercise:advanced` | Transactions, batch operations, TTL, optimistic locking, conditional writes, atomic counters |
 | **06 Streams** | `npm run exercise:streams` | Stream enablement, shard iteration, INSERT/MODIFY/REMOVE events, Lambda triggers, event source mapping |
 | **07 Capacity** | `npm run exercise:capacity` | RCU/WCU, provisioned vs on-demand, cost estimation, break-even analysis, monitoring |
+| **08 Production** | `npm run exercise:production` | Global Tables, PITR, on-demand backups, DAX, cost comparison |
 
 ## Project Structure
 
@@ -70,7 +71,8 @@ src/
 ├── 04-single-table/ # E-commerce in one table
 ├── 05-advanced/     # Transactions, TTL, streams, counters
 ├── 06-streams/      # Streams & Lambda triggers
-└── 07-capacity/     # RCU/WCU, provisioned vs on-demand, cost estimation
+├── 07-capacity/     # RCU/WCU, provisioned vs on-demand, cost estimation
+└── 08-production/   # Global Tables, PITR, backups, DAX
 
 test/                # Vitest tests (mirrors src/ structure)
 scripts/             # Table setup, teardown, seed data, DB launcher
@@ -118,6 +120,7 @@ In another terminal, run `npm run db:scan` to inspect the database between steps
 | `npm run exercise:advanced` | Run Module 05 exercise |
 | `npm run exercise:streams` | Run Module 06 exercise (requires real AWS) |
 | `npm run exercise:capacity` | Run Module 07 exercise |
+| `npm run exercise:production` | Run Module 08 exercise |
 | `npm test` | Run all tests |
 | `npm run test:watch` | Run tests in watch mode |
 | `npm run test:coverage` | Run tests with coverage report |
