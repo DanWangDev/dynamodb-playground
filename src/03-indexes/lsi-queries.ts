@@ -37,19 +37,22 @@ export async function queryOrdersByTotal(
     values[":maxTotal"] = maxTotal;
   }
 
-  const result = await doc.send(
-    new QueryCommand({
-      TableName: tableName,
-      IndexName: "total-index",
-      KeyConditionExpression: conditions.join(" AND "),
-      ExpressionAttributeNames: { "#total": "total" },
-      ExpressionAttributeValues: values,
-      // LSIs support strongly consistent reads
-      ConsistentRead: true,
-      ScanIndexForward: true, // ascending = cheapest first
-      ReturnConsumedCapacity: "TOTAL",
-    }),
-  );
+  const command: any = {
+    TableName: tableName,
+    IndexName: "total-index",
+    KeyConditionExpression: conditions.join(" AND "),
+    ExpressionAttributeValues: values,
+    ConsistentRead: true,
+    ScanIndexForward: true, // ascending = cheapest first
+    ReturnConsumedCapacity: "TOTAL",
+  };
+
+  // Only include ExpressionAttributeNames when #total is actually used
+  if (minTotal !== undefined || maxTotal !== undefined) {
+    command.ExpressionAttributeNames = { "#total": "total" };
+  }
+
+  const result = await doc.send(new QueryCommand(command));
 
   return {
     items: (result.Items ?? []) as Order[],
