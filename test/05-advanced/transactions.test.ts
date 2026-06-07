@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
-import { PutCommand } from "@aws-sdk/lib-dynamodb";
+import { PutCommand, TransactWriteCommand } from "@aws-sdk/lib-dynamodb";
 import {
   createOrderAndDeductInventory,
   transferInventory,
@@ -13,10 +13,21 @@ const INVENTORY_TABLE = uniqueTableName("adv_inventory");
 
 describe("05-advanced: Transactions", () => {
   const { raw, doc } = createTestClient();
+  let transactionsSupported = true;
 
   beforeAll(async () => {
     await tableBuilder(raw, ORDER_TABLE).withPK("pk", "S").withSK("sk", "S").create();
     await tableBuilder(raw, INVENTORY_TABLE).withPK("productId", "S").create();
+
+    // Detect whether transactions are supported (dynalite does not support them)
+    try {
+      await doc.send(new TransactWriteCommand({ TransactItems: [] }));
+    } catch (error: unknown) {
+      if (error instanceof Error && error.name === "UnknownOperationException") {
+        transactionsSupported = false;
+        console.warn("[test] Transactions not supported by this DynamoDB endpoint — skipping transaction tests");
+      }
+    }
 
     // Seed inventory
     await doc.send(
@@ -36,6 +47,8 @@ describe("05-advanced: Transactions", () => {
 
   describe("createOrderAndDeductInventory", () => {
     it("should atomically create order and deduct inventory", async () => {
+      if (!transactionsSupported) return;
+
       await createOrderAndDeductInventory(doc, ORDER_TABLE, INVENTORY_TABLE, {
         pk: "CUST#txn_1",
         sk: "ORDER#txn_1",
@@ -48,6 +61,8 @@ describe("05-advanced: Transactions", () => {
     });
 
     it("should roll back when inventory is insufficient", async () => {
+      if (!transactionsSupported) return;
+
       await expect(
         createOrderAndDeductInventory(doc, ORDER_TABLE, INVENTORY_TABLE, {
           pk: "CUST#txn_2",
@@ -71,6 +86,8 @@ describe("05-advanced: Transactions", () => {
     });
 
     it("should transfer stock between products atomically", async () => {
+      if (!transactionsSupported) return;
+
       // Transfer 10 from inv_prod_3 to inv_prod_1
       await expect(
         transferInventory(doc, INVENTORY_TABLE, "inv_prod_3", "inv_prod_1", 10),
@@ -78,6 +95,8 @@ describe("05-advanced: Transactions", () => {
     });
 
     it("should fail transfer when source has insufficient stock", async () => {
+      if (!transactionsSupported) return;
+
       await expect(
         transferInventory(doc, INVENTORY_TABLE, "inv_prod_1", "inv_prod_3", 99999),
       ).rejects.toThrow(TransactionCanceledError);

@@ -89,6 +89,7 @@ export async function forEachOrderPage(
 
   do {
     const page = await getOrdersPage(doc, tableName, customerId, pageSize, cursor);
+    if (page.items.length === 0) break; // defensive: some emulators may return an empty trailing page
     await callback(page.items, pageIndex);
     totalProcessed += page.items.length;
     pageIndex++;

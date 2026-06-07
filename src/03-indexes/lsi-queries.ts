@@ -27,14 +27,22 @@ export async function queryOrdersByTotal(
 ): Promise<PaginatedResult<Order>> {
   const conditions: string[] = ["customerId = :customerId"];
   const values: Record<string, unknown> = { ":customerId": customerId };
+  let hasFilter = false;
 
-  if (minTotal !== undefined) {
+  if (minTotal !== undefined && maxTotal !== undefined) {
+    // Use BETWEEN to avoid "only one condition per key" restriction
+    conditions.push("#total BETWEEN :minTotal AND :maxTotal");
+    values[":minTotal"] = minTotal;
+    values[":maxTotal"] = maxTotal;
+    hasFilter = true;
+  } else if (minTotal !== undefined) {
     conditions.push("#total >= :minTotal");
     values[":minTotal"] = minTotal;
-  }
-  if (maxTotal !== undefined) {
+    hasFilter = true;
+  } else if (maxTotal !== undefined) {
     conditions.push("#total <= :maxTotal");
     values[":maxTotal"] = maxTotal;
+    hasFilter = true;
   }
 
   const command: any = {
@@ -48,7 +56,7 @@ export async function queryOrdersByTotal(
   };
 
   // Only include ExpressionAttributeNames when #total is actually used
-  if (minTotal !== undefined || maxTotal !== undefined) {
+  if (hasFilter) {
     command.ExpressionAttributeNames = { "#total": "total" };
   }
 
