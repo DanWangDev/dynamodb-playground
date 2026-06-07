@@ -29,11 +29,11 @@ export async function queryOrdersByTotal(
   const values: Record<string, unknown> = { ":customerId": customerId };
 
   if (minTotal !== undefined) {
-    conditions.push("total >= :minTotal");
+    conditions.push("#total >= :minTotal");
     values[":minTotal"] = minTotal;
   }
   if (maxTotal !== undefined) {
-    conditions.push("total <= :maxTotal");
+    conditions.push("#total <= :maxTotal");
     values[":maxTotal"] = maxTotal;
   }
 
@@ -42,6 +42,7 @@ export async function queryOrdersByTotal(
       TableName: tableName,
       IndexName: "total-index",
       KeyConditionExpression: conditions.join(" AND "),
+      ExpressionAttributeNames: { "#total": "total" },
       ExpressionAttributeValues: values,
       // LSIs support strongly consistent reads
       ConsistentRead: true,
@@ -77,7 +78,8 @@ export async function queryMostExpensiveOrders(
       TableName: tableName,
       IndexName: "total-index",
       KeyConditionExpression:
-        "customerId = :customerId AND total >= :minTotal",
+        "customerId = :customerId AND #total >= :minTotal",
+      ExpressionAttributeNames: { "#total": "total" },
       ExpressionAttributeValues: {
         ":customerId": customerId,
         ":minTotal": minTotal,
