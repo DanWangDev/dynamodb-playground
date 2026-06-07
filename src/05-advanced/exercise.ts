@@ -28,7 +28,9 @@ import {
 const log = createLogger("05-advanced");
 const ORDER_TABLE = `${env.DDB_TABLE_PREFIX}orders`;
 const SESSION_TABLE = `${env.DDB_TABLE_PREFIX}sessions`;
-const ECOM_TABLE = `${env.DDB_TABLE_PREFIX}ecommerce`;
+const INVENTORY_TABLE = `${env.DDB_TABLE_PREFIX}inventory`;
+const PROFILE_TABLE = `${env.DDB_TABLE_PREFIX}profiles`;
+const STATS_TABLE = `${env.DDB_TABLE_PREFIX}stats`;
 
 async function run(): Promise<void> {
   const { doc } = createClientFromEnv(env);
@@ -54,7 +56,7 @@ async function run(): Promise<void> {
     await createOrderAndDeductInventory(
       doc,
       ORDER_TABLE,
-      `${env.DDB_TABLE_PREFIX}books`, // reusing books as inventory
+      INVENTORY_TABLE,
       {
         pk: "cust_adv_1",
         sk: "ORDER#txn_1",
@@ -86,7 +88,7 @@ async function run(): Promise<void> {
 
   log.step("Batch-writing 30 products (will be chunked into 25 + 5)...");
   const products = Array.from({ length: 30 }, (_, i) => ({
-    isbn: `bulk_prod_${i}`,
+    productId: `bulk_prod_${i}`,
     name: `Bulk Product ${i}`,
     price: (i + 1) * 1.99,
     stock: 100,
@@ -94,7 +96,7 @@ async function run(): Promise<void> {
 
   const batchResult = await batchWriteWithRetry(
     doc,
-    `${env.DDB_TABLE_PREFIX}books`, // reusing for demo
+    INVENTORY_TABLE,
     products,
   );
   log.success(
@@ -165,7 +167,7 @@ async function run(): Promise<void> {
   log.step("Creating a user profile (version starts at 0)...");
   const profile = await createUserProfile(
     doc,
-    ECOM_TABLE,
+    PROFILE_TABLE,
     "user_adv_1",
     "Alice Advanced",
     "alice@advanced.com",
@@ -175,7 +177,7 @@ async function run(): Promise<void> {
   log.step("Updating with correct version (0 → should succeed)...");
   const updated = await updateUserProfileOptimistic(
     doc,
-    ECOM_TABLE,
+    PROFILE_TABLE,
     "user_adv_1",
     "Alice Updated",
     "alice-new@advanced.com",
@@ -187,7 +189,7 @@ async function run(): Promise<void> {
   try {
     await updateUserProfileOptimistic(
       doc,
-      ECOM_TABLE,
+      PROFILE_TABLE,
       "user_adv_1",
       "Alice Conflicting",
       "alice-conflict@advanced.com",
@@ -202,7 +204,7 @@ async function run(): Promise<void> {
   log.step("Updating with automatic retry loop...");
   const finalProfile = await updateWithRetry(
     doc,
-    ECOM_TABLE,
+    PROFILE_TABLE,
     "user_adv_1",
     "Alice Retried",
     "alice-final@advanced.com",
@@ -222,25 +224,25 @@ async function run(): Promise<void> {
   console.log(explainAtomicCounter());
 
   log.step("Incrementing views on an article...");
-  let views = await incrementViews(doc, ECOM_TABLE, "article_1");
+  let views = await incrementViews(doc, STATS_TABLE, "article_1");
   log.success(`Views: ${views}`);
 
-  views = await incrementViews(doc, ECOM_TABLE, "article_1", 5);
+  views = await incrementViews(doc, STATS_TABLE, "article_1", 5);
   log.success(`Views after +5: ${views}`);
 
   log.step("Liking an article...");
-  const likes = await likeArticle(doc, ECOM_TABLE, "article_1");
+  const likes = await likeArticle(doc, STATS_TABLE, "article_1");
   log.success(`Likes: ${likes}`);
 
   log.step("Simulating concurrent increments (3 at once)...");
   await Promise.all([
-    incrementViews(doc, ECOM_TABLE, "article_2"),
-    incrementViews(doc, ECOM_TABLE, "article_2"),
-    incrementViews(doc, ECOM_TABLE, "article_2"),
+    incrementViews(doc, STATS_TABLE, "article_2"),
+    incrementViews(doc, STATS_TABLE, "article_2"),
+    incrementViews(doc, STATS_TABLE, "article_2"),
   ]);
   log.success("Concurrent increments completed. Final count should be 3");
 
-  const stats = await getArticleStats(doc, ECOM_TABLE, "article_2");
+  const stats = await getArticleStats(doc, STATS_TABLE, "article_2");
   log.success(`Final: views=${stats?.views ?? "?"}, likes=${stats?.likes ?? "?"}`);
 
   // ─── Summary ──────────────────────────────────────────────────
