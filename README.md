@@ -86,7 +86,8 @@ scripts/             # Table setup, teardown, seed data, DB launcher
 
 ```bash
 npm run reset       # Purge all data, recreate tables, re-seed (teardown + setup + seed)
-npm run db:scan     # View all data in all tables (pass table name to filter)
+npm run db:scan     # Interactive table browser (pick table, paginate, formatted output)
+npm run db:describe # Show table schemas, keys, indexes, item counts, sizes
 npm run teardown    # Delete all playground tables
 npm run setup       # Create tables (safe to re-run — skips existing)
 npm run seed        # Populate with fresh sample data
@@ -108,6 +109,8 @@ In another terminal, run `npm run db:scan` to inspect the database between steps
 | `npm run setup` | Create all playground tables |
 | `npm run seed` | Populate tables with sample data |
 | `npm run teardown` | Delete all playground tables |
+| `npm run db:scan` | Interactive table browser (pick table, paginate, formatted) |
+| `npm run db:describe` | Show table schemas, keys, indexes, item counts, sizes |
 | `npm run exercise:crud` | Run Module 01 exercise |
 | `npm run exercise:queries` | Run Module 02 exercise |
 | `npm run exercise:indexes` | Run Module 03 exercise |
