@@ -1,5 +1,7 @@
 # DynamoDB Playground
 
+> 📖 [中文版 (Chinese Version)](README.zh-CN.md)
+
 A hands-on, exercise-driven DynamoDB learning project. Each module explains a concept, then lets you practice it with runnable TypeScript exercises.
 
 ## Quick Start
